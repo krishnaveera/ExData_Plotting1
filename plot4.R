@@ -1,0 +1,23 @@
+plot4 <- function() {
+##Creates multiple plots of power consumption data from 2/1/2007-2/2/2007
+library(dplyr)
+powercomp <- tbl_df(read.table("household_power_consumption.txt", header=TRUE, sep= ";", na.strings = c("?","")))
+powercomp$Date <- as.Date(powercomp$Date, format = "%d/%m/%Y")
+powercomp$timetemp <- paste(powercomp$Date, powercomp$Time)  
+powercomp$Time <- strptime(powercomp$timetemp, format = "%Y-%m-%d %H:%M:%S")
+relevantdatespower <- subset(powercomp, Date>="2007-02-01" & Date<="2007-02-02")
+png(file = "plot4.png")
+par(mfrow=c(2,2))
+with(relevantdatespower, plot(Time, Global_active_power, pch=NA_integer_, ylab = "Global Active Power (kilowatts)"))
+lines(relevantdatespower$Time,relevantdatespower$Global_active_power)
+with(relevantdatespower, plot(Time, Voltage, pch=NA_integer_, xlab ="datetime", ylab="Voltage"))
+lines(relevantdatespower$Time,relevantdatespower$Voltage)
+with(relevantdatespower, plot(Time, Sub_metering_1,pch=NA_integer_, ylab="Energy Sub Metering"))
+lines(relevantdatespower$Time,relevantdatespower$Sub_metering_1, col="black")
+lines(relevantdatespower$Time,relevantdatespower$Sub_metering_2, col="red")
+lines(relevantdatespower$Time,relevantdatespower$Sub_metering_3, col="blue")
+legend("topright",lty=1,lwd=2, col = c("black", "red", "blue"), legend = c("Sub Metering 1", "Sub Metering 2", "Sub Metering 3"))
+with(relevantdatespower, plot(Time, Global_reactive_power, pch=NA_integer_, xlab ="datetime", ylab="Global_reactive_power"))
+lines(relevantdatespower$Time,relevantdatespower$Global_active_power)
+dev.off()
+}
